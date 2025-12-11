@@ -16,6 +16,8 @@ const wikiRoutes = require('./routes/wiki');
 const userRoutes = require('./routes/users');
 const uploadRoutes = require('./routes/upload');
 const notificationRoutes = require('./routes/notifications');
+const adminRoutes = require('./routes/admin');
+const reportRoutes = require('./routes/reports');
 
 // Import services
 const { checkAndTransitionPosts } = require('./services/transitionService');
@@ -55,6 +57,8 @@ app.use('/api/wiki', wikiRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Static files for uploads
 app.use('/uploads', express.static('uploads'));

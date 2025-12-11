@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 const path = require('path');
 const fs = require('fs');
 
 // رفع صورة واحدة
-router.post('/image', auth, upload.single('image'), async (req, res) => {
+router.post('/image', authenticate, upload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'لم يتم رفع أي ملف' });
@@ -31,7 +31,7 @@ router.post('/image', auth, upload.single('image'), async (req, res) => {
 });
 
 // رفع عدة صور (حتى 5)
-router.post('/images', auth, upload.array('images', 5), async (req, res) => {
+router.post('/images', authenticate, upload.array('images', 5), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'لم يتم رفع أي ملفات' });
@@ -56,7 +56,7 @@ router.post('/images', auth, upload.array('images', 5), async (req, res) => {
 });
 
 // حذف ملف
-router.delete('/:filename', auth, async (req, res) => {
+router.delete('/:filename', authenticate, async (req, res) => {
   try {
     const filename = req.params.filename;
     const filePath = path.join(__dirname, '../uploads', filename);

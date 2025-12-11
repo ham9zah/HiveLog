@@ -6,13 +6,15 @@ import { MessageCircle, Loader } from 'lucide-react';
 
 const CommentSection = ({ postId }) => {
   const {
-    data: comments,
+    data,
     isLoading,
     error,
   } = useQuery(['comments', postId], async () => {
     const response = await api.get(`/comments/post/${postId}`);
     return response.data;
   });
+
+  const comments = data?.comments || [];
 
   if (isLoading) {
     return (
@@ -30,7 +32,7 @@ const CommentSection = ({ postId }) => {
     );
   }
 
-  const topLevelComments = comments?.filter((c) => !c.parentComment) || [];
+  const topLevelComments = comments.filter((c) => !c.parentComment);
 
   return (
     <div className="mt-8">
@@ -38,7 +40,7 @@ const CommentSection = ({ postId }) => {
       <div className="flex items-center gap-2 mb-6">
         <MessageCircle className="text-primary-600" size={24} />
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          التعليقات ({comments?.length || 0})
+          التعليقات ({comments.length})
         </h2>
       </div>
 

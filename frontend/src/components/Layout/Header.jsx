@@ -1,8 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
-import { Search, User, LogOut, PlusCircle } from 'lucide-react';
+import { Search, User, LogOut, PlusCircle, Shield } from 'lucide-react';
 import { useState } from 'react';
-import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import NotificationCenter from '../Notification/NotificationCenter';
 
 const Header = () => {
@@ -51,8 +50,6 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
-            <ThemeToggle />
-            
             {isAuthenticated() ? (
               <>
                 <Link
@@ -87,19 +84,35 @@ const Header = () => {
                   </button>
 
                   {showUserMenu && (
-                    <div className="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+                    <div className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2">
                       <Link
                         to={`/user/${user?.username}`}
-                        className="block px-4 py-2 text-sm hover:bg-gray-100"
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                         onClick={() => setShowUserMenu(false)}
                       >
                         <User size={16} className="inline ml-2" />
                         الملف الشخصي
                       </Link>
-                      <hr className="my-2" />
+                      
+                      {/* Admin Link */}
+                      {(user?.role === 'admin' || user?.role === 'super_admin' || user?.role === 'moderator') && (
+                        <>
+                          <hr className="my-2 border-gray-200 dark:border-gray-700" />
+                          <Link
+                            to="/admin"
+                            className="block px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-yellow-500 dark:text-yellow-400"
+                            onClick={() => setShowUserMenu(false)}
+                          >
+                            <Shield size={16} className="inline ml-2" />
+                            لوحة التحكم
+                          </Link>
+                        </>
+                      )}
+                      
+                      <hr className="my-2 border-gray-200 dark:border-gray-700" />
                       <button
                         onClick={handleLogout}
-                        className="w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                        className="w-full text-right px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                       >
                         <LogOut size={16} className="inline ml-2" />
                         تسجيل الخروج

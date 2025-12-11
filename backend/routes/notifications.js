@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { authenticate } = require('../middleware/auth');
 const NotificationService = require('../services/notificationService');
 
 // الحصول على إشعارات المستخدم
-router.get('/', auth, async (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   try {
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
     const io = req.app.get('io');
@@ -27,7 +27,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // عدد الإشعارات غير المقروءة
-router.get('/unread-count', auth, async (req, res) => {
+router.get('/unread-count', authenticate, async (req, res) => {
   try {
     const Notification = require('../models/Notification');
     const count = await Notification.countDocuments({
@@ -43,7 +43,7 @@ router.get('/unread-count', auth, async (req, res) => {
 });
 
 // وضع علامة مقروء على إشعار
-router.put('/:id/read', auth, async (req, res) => {
+router.put('/:id/read', authenticate, async (req, res) => {
   try {
     const io = req.app.get('io');
     const notificationService = new NotificationService(io);
@@ -65,7 +65,7 @@ router.put('/:id/read', auth, async (req, res) => {
 });
 
 // وضع علامة مقروء على كل الإشعارات
-router.put('/read-all', auth, async (req, res) => {
+router.put('/read-all', authenticate, async (req, res) => {
   try {
     const io = req.app.get('io');
     const notificationService = new NotificationService(io);
@@ -80,7 +80,7 @@ router.put('/read-all', auth, async (req, res) => {
 });
 
 // حذف إشعار
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     const io = req.app.get('io');
     const notificationService = new NotificationService(io);
@@ -95,7 +95,7 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // حذف كل الإشعارات
-router.delete('/', auth, async (req, res) => {
+router.delete('/', authenticate, async (req, res) => {
   try {
     const io = req.app.get('io');
     const notificationService = new NotificationService(io);

@@ -7,6 +7,39 @@ const NotificationService = require('../services/notificationService');
 const router = express.Router();
 
 /**
+ * Recursively populate replies for a comment
+ */
+async function populateReplies(comment, userId, maxDepth = 5) {
+  if (comment.depth >= maxDepth) {
+    comment.replies = [];
+    return comment;
+  }
+
+  const replies = await Comment.find({
+    parentComment: comment._id,
+    isDeleted: false
+  })
+    .sort({ voteScore: -1, createdAt: -1 })
+    .populate('author', 'username avatar karma')
+    .lean();
+
+  // Add user vote status if authenticated
+  if (userId) {
+    replies.forEach(reply => {
+      reply.userVote = reply.upvotes.some(id => id.equals(userId)) ? 'upvote' :
+                      reply.downvotes.some(id => id.equals(userId)) ? 'downvote' : null;
+    });
+  }
+
+  // Recursively populate replies for each reply
+  comment.replies = await Promise.all(
+    replies.map(reply => populateReplies(reply, userId, maxDepth))
+  );
+
+  return comment;
+}
+
+/**
  * Create new comment
  */
 router.post('/', authenticate, async (req, res) => {
@@ -86,19 +119,13 @@ router.post('/', authenticate, async (req, res) => {
  */
 router.get('/post/:postId', optionalAuth, async (req, res) => {
   try {
-    const { sort = 'best', parentId } = req.query;
+    const { sort = 'best' } = req.query;
     
     const query = {
       post: req.params.postId,
-      isDeleted: false
+      isDeleted: false,
+      parentComment: null  // Only get top-level comments
     };
-    
-    // Filter by parent if specified
-    if (parentId === 'null' || parentId === 'root') {
-      query.parentComment = null;
-    } else if (parentId) {
-      query.parentComment = parentId;
-    }
     
     let sortOption = {};
     switch (sort) {
@@ -115,29 +142,25 @@ router.get('/post/:postId', optionalAuth, async (req, res) => {
         sortOption = { voteScore: -1 };
     }
     
-    const comments = await Comment.find(query)
+    const topLevelComments = await Comment.find(query)
       .sort(sortOption)
       .populate('author', 'username avatar karma')
       .lean();
     
     // Add user vote status if authenticated
     if (req.userId) {
-      comments.forEach(comment => {
-        comment.userVote = comment.upvotes.some(id => id.equals(req.userId)) ? 'up' :
-                          comment.downvotes.some(id => id.equals(req.userId)) ? 'down' : null;
+      topLevelComments.forEach(comment => {
+        comment.userVote = comment.upvotes.some(id => id.equals(req.userId)) ? 'upvote' :
+                          comment.downvotes.some(id => id.equals(req.userId)) ? 'downvote' : null;
       });
     }
     
-    // Get reply counts for each comment
-    for (let comment of comments) {
-      const replyCount = await Comment.countDocuments({
-        parentComment: comment._id,
-        isDeleted: false
-      });
-      comment.replyCount = replyCount;
-    }
+    // Recursively populate replies for each top-level comment
+    const commentsWithReplies = await Promise.all(
+      topLevelComments.map(comment => populateReplies(comment, req.userId))
+    );
     
-    res.json({ comments });
+    res.json({ comments: commentsWithReplies });
   } catch (error) {
     console.error('Get comments error:', error);
     res.status(500).json({ message: 'Failed to fetch comments' });

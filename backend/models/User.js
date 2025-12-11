@@ -37,12 +37,46 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'moderator', 'admin'],
+    enum: ['user', 'moderator', 'admin', 'super_admin'],
     default: 'user'
   },
+  permissions: [{
+    type: String,
+    enum: [
+      'manage_users',        // إدارة المستخدمين
+      'ban_users',           // حظر المستخدمين
+      'delete_posts',        // حذف المنشورات
+      'delete_comments',     // حذف التعليقات
+      'edit_posts',          // تعديل المنشورات
+      'pin_posts',           // تثبيت المنشورات
+      'manage_categories',   // إدارة الفئات
+      'view_reports',        // عرض البلاغات
+      'manage_reports',      // إدارة البلاغات
+      'view_analytics',      // عرض الإحصائيات
+      'manage_permissions',  // إدارة الصلاحيات
+      'manage_moderators'    // إدارة المشرفين
+    ]
+  }],
   isActive: {
     type: Boolean,
     default: true
+  },
+  isBanned: {
+    type: Boolean,
+    default: false
+  },
+  banReason: {
+    type: String,
+    default: null
+  },
+  bannedAt: {
+    type: Date,
+    default: null
+  },
+  bannedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   },
   lastSeen: {
     type: Date,
@@ -75,6 +109,27 @@ userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
   return user;
+};
+
+// Check if user has permission
+userSchema.methods.hasPermission = function(permission) {
+  if (this.role === 'super_admin') return true;
+  if (this.role === 'admin') {
+    const adminPermissions = ['manage_users', 'ban_users', 'delete_posts', 'delete_comments', 
+                              'edit_posts', 'pin_posts', 'view_reports', 'manage_reports', 'view_analytics'];
+    return adminPermissions.includes(permission);
+  }
+  return this.permissions.includes(permission);
+};
+
+// Check if user is admin or super admin
+userSchema.methods.isAdminRole = function() {
+  return ['admin', 'super_admin'].includes(this.role);
+};
+
+// Check if user is moderator or higher
+userSchema.methods.isModeratorRole = function() {
+  return ['moderator', 'admin', 'super_admin'].includes(this.role);
 };
 
 module.exports = mongoose.model('User', userSchema);

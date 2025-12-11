@@ -16,6 +16,10 @@ import WikiPage from './pages/WikiPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import AdminDashboard from './pages/AdminDashboard';
+import UserManagement from './pages/UserManagement';
+import ReportsManagement from './pages/ReportsManagement';
+import CreateAdmin from './pages/CreateAdmin';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -28,6 +32,9 @@ function App() {
   const { addNotification } = useNotificationStore();
 
   useEffect(() => {
+    // Force dark mode
+    document.documentElement.classList.add('dark');
+    
     // Connect socket if authenticated
     if (isAuthenticated()) {
       socketService.connect();
@@ -63,6 +70,9 @@ function App() {
 
   return (
     <Routes>
+      {/* Admin Setup Route - Standalone */}
+      <Route path="create-admin" element={<CreateAdmin />} />
+      
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="post/:id" element={<PostPage />} />
@@ -75,6 +85,32 @@ function App() {
           element={
             <ProtectedRoute>
               <CreatePostPage />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Admin Routes */}
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/reports"
+          element={
+            <ProtectedRoute>
+              <ReportsManagement />
             </ProtectedRoute>
           }
         />

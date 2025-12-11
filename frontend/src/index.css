@@ -14,8 +14,8 @@
 body {
   font-family: 'Cairo', sans-serif;
   direction: rtl;
-  background-color: #f9fafb;
-  color: #111827;
+  background-color: #111827;
+  color: #f9fafb;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -85,12 +85,12 @@ body {
 }
 
 .markdown-content a {
-  color: #0284c7;
+  color: #facc15;
   text-decoration: underline;
 }
 
 .markdown-content a:hover {
-  color: #0369a1;
+  color: #eab308;
 }
 
 .markdown-content code {
@@ -180,8 +180,8 @@ body {
 .spinner {
   animation: spin 1s linear infinite;
   border-radius: 9999px;
-  border: 4px solid #e5e7eb;
-  border-top-color: #0284c7;
+  border: 4px solid #374151;
+  border-top-color: #eab308;
 }
 
 @keyframes spin {
@@ -212,12 +212,12 @@ body {
 }
 
 .btn-primary {
-  background-color: #0284c7;
-  color: white;
+  background-color: #eab308;
+  color: #111827;
 }
 
 .btn-primary:hover {
-  background-color: #0369a1;
+  background-color: #ca8a04;
 }
 
 .btn-primary:active {
@@ -225,12 +225,12 @@ body {
 }
 
 .btn-secondary {
-  background-color: #e5e7eb;
-  color: #1f2937;
+  background-color: #374151;
+  color: #f9fafb;
 }
 
 .btn-secondary:hover {
-  background-color: #d1d5db;
+  background-color: #4b5563;
 }
 
 .btn-secondary:active {
@@ -238,11 +238,11 @@ body {
 }
 
 .btn-ghost {
-  color: #374151;
+  color: #f9fafb;
 }
 
 .btn-ghost:hover {
-  background-color: #f3f4f6;
+  background-color: #374151;
 }
 
 .btn-ghost:active {
@@ -253,28 +253,32 @@ body {
 .input {
   width: 100%;
   padding: 0.5rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #4b5563;
   border-radius: 0.5rem;
+  background-color: #1f2937;
+  color: #f9fafb;
 }
 
 .input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #0ea5e9;
-  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px #eab308;
+  border-color: #eab308;
 }
 
 .textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #4b5563;
   border-radius: 0.5rem;
   resize: none;
+  background-color: #1f2937;
+  color: #f9fafb;
 }
 
 .textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #0ea5e9;
-  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px #eab308;
+  border-color: #eab308;
 }
 
 /* Badge styles */

@@ -1,8 +1,11 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export const useAuthStore = create((set, get) => ({
+export const useAuthStore = create(
+  persist(
+    (set, get) => ({
       user: null,
-      token: null,
+      token: localStorage.getItem('token') || null,
       
       setAuth: (user, token) => {
         set({ user, token });
@@ -20,7 +23,13 @@ export const useAuthStore = create((set, get) => ({
         set({ user: { ...get().user, ...userData } });
       },
       
-  isAuthenticated: () => {
-    return !!get().token && !!get().user;
-  },
-}));
+      isAuthenticated: () => {
+        return !!get().token && !!get().user;
+      },
+    }),
+    {
+      name: 'auth-storage',
+      getStorage: () => localStorage,
+    }
+  )
+);
